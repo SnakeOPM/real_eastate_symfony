@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  php-fpm:
+    container_name: php-fpm
+    build:
+      context: ./../
+      dockerfile: ./docker/php-fpm/Dockerfile
+      args:
+        - PUID=${PUID}
+        - PGID=${PGID}
+    volumes:
+      - ./../:/var/www/
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      network: host
+    ports:
+      - ${NGINX_HOST_HTTP_PORT}:80
+    volumes:
+      - ..:/var/www:rw
+    depends_on:
+      - php-fpm
+    links:
+      - php-fpm
+  db:
+    container_name: db
+    image: postgres:alpine3.18
+    environment:
+      POSTGRES_USER: "laravel"
+      POSTGRES_PASSWORD: "laravel"
+      POSTGRES_DB: "laravel"
+
+    volumes:
+      - ../db_data:/var/lib/postgresql/data
+
+    ports:
+      - "5433:5432"
