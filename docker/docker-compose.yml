@@ -1,8 +1,14 @@
 version: "3.8"
 
+networks:
+  application:
+    driver: bridge
+
 services:
   php-fpm:
     container_name: php-fpm
+    networks:
+      - application
     build:
       context: ./../
       dockerfile: ./docker/php-fpm/Dockerfile
@@ -14,9 +20,10 @@ services:
 
   nginx:
     container_name: nginx
+    networks:
+      - application
     build:
       context: ./nginx
-      network: host
     ports:
       - ${NGINX_HOST_HTTP_PORT}:80
     volumes:
@@ -27,6 +34,8 @@ services:
       - php-fpm
   db:
     container_name: db
+    networks:
+      - application
     image: postgres:alpine3.18
     environment:
       POSTGRES_USER: "laravel"
