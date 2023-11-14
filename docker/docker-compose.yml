@@ -1,14 +1,9 @@
 version: "3.8"
 
-networks:
-  application:
-    driver: bridge
 
 services:
   php-fpm:
     container_name: php-fpm
-    networks:
-      - application
     build:
       context: ./../
       dockerfile: ./docker/php-fpm/Dockerfile
@@ -20,8 +15,6 @@ services:
 
   nginx:
     container_name: nginx
-    networks:
-      - application
     build:
       context: ./nginx
     ports:
@@ -34,9 +27,7 @@ services:
       - php-fpm
   db:
     container_name: db
-    networks:
-      - application
-    image: postgres:alpine3.18
+    image: postgres:16-alpine3.18
     environment:
       POSTGRES_USER: "laravel"
       POSTGRES_PASSWORD: "laravel"
